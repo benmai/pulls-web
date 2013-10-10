@@ -16,7 +16,7 @@
         <li>{{$name}}</li>
           <ul>
             {{range $pr := $pulls}}
-            <li>{{$pr}}</li>
+            <li><img src="{{$pr.User.AvatarURL}}" style="width:25px">{{$pr.User.Login}}<br/> {{$pr.Title}}: <a href="{{$pr.HtmlURL}}">{{$pr.HtmlURL}}</a></li>
             {{end}}
           </ul>
         {{end}}
