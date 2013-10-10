@@ -26,7 +26,7 @@ func getPullsForRepo(wg *sync.WaitGroup, c *github.Client, repoName string, repo
 	repoMap[repoName] = pulls
 }
 
-func getPulls() map[string][]github.PullRequest {
+func getRepoMap() map[string][]github.PullRequest {
 	var wg sync.WaitGroup
 	repoMap := map[string][]github.PullRequest{}
 	githubToken := os.Getenv("GITHUB_API_TOKEN")
@@ -47,7 +47,7 @@ func getPulls() map[string][]github.PullRequest {
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	repoMap := getPulls()
+	repoMap := getRepoMap()
 	t, err := template.New("index.html").ParseFiles("templates/index.html")
 	if err != nil {
 		log.Panic(err)
