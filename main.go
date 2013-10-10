@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"github.com/google/go-github/github"
-	"github.com/gorilla/mux"
 	"html/template"
 	"log"
 	"net/http"
@@ -62,8 +61,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	flag.Parse()
-	r := mux.NewRouter()
-	r.HandleFunc("/", HomeHandler)
+	http.HandleFunc("/", HomeHandler)
 	fmt.Println("Running on localhost:" + *port)
-	log.Fatal(http.ListenAndServe(":"+*port, r))
+	log.Fatal(http.ListenAndServe(":"+*port, nil))
 }
