@@ -20,8 +20,7 @@ var (
 
 func getPullsForRepo(wg *sync.WaitGroup, c *github.Client, repoName string, repoMap map[string][]github.PullRequest) {
 	defer wg.Done()
-	opt := &github.PullRequestListOptions{"open", "", ""}
-	pulls, _, err := c.PullRequests.List(*orgName, repoName, opt)
+	pulls, _, err := c.PullRequests.List(*orgName, repoName, nil)
 	if err != nil {
 		fmt.Println(err)
 	}
