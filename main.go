@@ -17,43 +17,57 @@ var (
 	orgName = flag.String("org", "", "GitHub organization name")
 )
 
-func getPullsForRepo(wg *sync.WaitGroup, c *github.Client, repoName string, repoMap map[string][]github.PullRequest) {
-	defer wg.Done()
-	pulls, _, err := c.PullRequests.List(*orgName, repoName, nil)
-	if err != nil {
-		fmt.Println(err)
-	}
-	repoMap[repoName] = pulls
+type Repository struct {
+	github.Repository
+	PullRequests []github.PullRequest
 }
 
-func getRepoMap() map[string][]github.PullRequest {
+func getPullsForRepo(wg *sync.WaitGroup, c *github.Client, gitHubRepo github.Repository, repos []Repository, i int) {
+	defer wg.Done()
+	pulls, _, err := c.PullRequests.List(*orgName, *gitHubRepo.Name, nil)
+	if err != nil {
+		log.Panic(err)
+	}
+	repo := Repository{}
+	repo.Repository = gitHubRepo
+	repo.PullRequests = pulls
+	repos[i] = repo
+}
+
+func getRepos() []Repository {
 	var wg sync.WaitGroup
-	repoMap := map[string][]github.PullRequest{}
 	githubToken := os.Getenv("GITHUB_API_TOKEN")
 	t := &oauth.Transport{
 		Token: &oauth.Token{AccessToken: githubToken},
 	}
 	client := github.NewClient(t.Client())
-	repos, _, err := client.Repositories.ListByOrg(*orgName, nil)
+	gitHubRepos, _, err := client.Repositories.ListByOrg(*orgName, nil)
+	repos := make([]Repository, len(gitHubRepos))
 	if err != nil {
-		fmt.Println(err)
+		log.Panic(err)
 	}
-	for _, repo := range repos {
+	for i, repo := range gitHubRepos {
 		wg.Add(1)
-		go getPullsForRepo(&wg, client, *repo.Name, repoMap)
+		go getPullsForRepo(&wg, client, repo, repos, i)
 	}
 	wg.Wait()
-	return repoMap
+	return repos
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	repoMap := getRepoMap()
+	repos := getRepos()
+	tmplRepos := []Repository{}
+	for _, repo := range repos {
+		if len(repo.PullRequests) > 0 {
+			tmplRepos = append(tmplRepos, repo)
+		}
+	}
 	t, err := template.New("index.html").ParseFiles("templates/index.html")
 	if err != nil {
 		log.Panic(err)
 	}
 	// Render the template
-	err = t.Execute(w, map[string]interface{}{"RepoMap": repoMap})
+	err = t.Execute(w, map[string]interface{}{"Repos": tmplRepos})
 	if err != nil {
 		log.Panic(err)
 	}

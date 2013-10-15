@@ -18,10 +18,10 @@
         </tr>
       </thead>
       <tbody>
-        {{range $name, $pulls := .RepoMap}}
+        {{range $repo := .Repos}}
         <tr>
-        <td>{{$name}}</td>
-        {{range $pr := $pulls}}
+        <td>{{$repo.Name}}</td>
+        {{range $pr := $repo.PullRequests}}
         <td><a href="{{$pr.HTMLURL}}">{{$pr.Title}}</a></li>
         <td><img src="{{$pr.User.AvatarURL}}" style="width:25px">{{$pr.User.Login}}</td>
         {{end}}
