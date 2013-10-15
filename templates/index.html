@@ -5,22 +5,30 @@
 </head>
 <body>
   <div class="container">
-    <div class="row">
-      <div class="span12 header">
-        <h1>Pulls Web</h1>
-      </div>
-      <div class="span6">
-        <ul>
+    <div class="span12 header">
+      <h1>Pulls Web</h1>
+    </div>
+    <div class="span6">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th class="column-repository">Repository</th>
+          <th class="column-pull-requests">Pull Requests</th>
+          <th class="column-user">User</th>
+        </tr>
+      </thead>
+      <tbody>
         {{range $name, $pulls := .RepoMap}}
-        <li>{{$name}}</li>
-          <ul>
-            {{range $pr := $pulls}}
-            <li><img src="{{$pr.User.AvatarURL}}" style="width:25px">{{$pr.User.Login}}<br/> {{$pr.Title}}: <a href="{{$pr.HTMLURL}}">{{$pr.HTMLURL}}</a></li>
-            {{end}}
-          </ul>
+        <tr>
+        <td>{{$name}}</td>
+        {{range $pr := $pulls}}
+        <td><a href="{{$pr.HTMLURL}}">{{$pr.Title}}</a></li>
+        <td><img src="{{$pr.User.AvatarURL}}" style="width:25px">{{$pr.User.Login}}</td>
         {{end}}
-        </ul>
-      </div>
+        {{end}}
+        </tr>
+      </tbody>
+    </table>
     </div>
   </div>
 </body>
