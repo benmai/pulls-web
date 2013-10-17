@@ -22,7 +22,7 @@
         <tr>
         <td>{{$repo.Name}}</td>
         {{range $pr := $repo.PullRequests}}
-        <td><a href="{{$pr.HTMLURL}}">{{$pr.Title}}</a></li>
+        <td><a href="{{$pr.HTMLURL}}">{{$pr.Title}}</a></td>
         <td><img src="{{$pr.User.AvatarURL}}" style="width:25px">{{$pr.User.Login}}</td>
         {{end}}
         {{end}}
