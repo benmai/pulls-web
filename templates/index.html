@@ -21,7 +21,7 @@
         {{range $repo := .Repos}}
         {{range $i, $pr := $repo.PullRequests}}
         <tr>
-          <td>{{if not $i}}{{$repo.Name}}{{end}}</td>
+          <td>{{if not $i}}<a href="{{$repo.HTMLURL}}">{{$repo.Name}}</a>{{end}}</td>
           <td><a href="{{$pr.HTMLURL}}">{{$pr.Title}}</a></td>
           <td><img src="{{$pr.User.AvatarURL}}" style="width:25px; margin: 0 10px;">{{$pr.User.Login}}</td>
         </tr>
