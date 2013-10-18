@@ -19,14 +19,14 @@
       </thead>
       <tbody>
         {{range $repo := .Repos}}
+        {{range $i, $pr := $repo.PullRequests}}
         <tr>
-        <td>{{$repo.Name}}</td>
-        {{range $pr := $repo.PullRequests}}
-        <td><a href="{{$pr.HTMLURL}}">{{$pr.Title}}</a></td>
-        <td><img src="{{$pr.User.AvatarURL}}" style="width:25px">{{$pr.User.Login}}</td>
-        {{end}}
-        {{end}}
+          <td>{{if not $i}}{{$repo.Name}}{{end}}</td>
+          <td><a href="{{$pr.HTMLURL}}">{{$pr.Title}}</a></td>
+          <td><img src="{{$pr.User.AvatarURL}}" style="width:25px; margin: 0 10px;">{{$pr.User.Login}}</td>
         </tr>
+        {{end}}
+        {{end}}
       </tbody>
     </table>
     </div>
