@@ -36,17 +36,32 @@ func getPullsForRepo(wg *sync.WaitGroup, c *github.Client, gitHubRepo github.Rep
 
 func getRepos() []Repository {
 	var wg sync.WaitGroup
+	page := 0
 	githubToken := os.Getenv("GITHUB_API_TOKEN")
 	t := &oauth.Transport{
 		Token: &oauth.Token{AccessToken: githubToken},
 	}
 	client := github.NewClient(t.Client())
 	gitHubRepos, _, err := client.Repositories.ListByOrg(*orgName, nil)
-	repos := make([]Repository, len(gitHubRepos))
+	allGitHubRepos := []github.Repository{}
 	if err != nil {
 		log.Panic(err)
 	}
-	for i, repo := range gitHubRepos {
+getAllRepos:
+	if len(gitHubRepos) < 30 {
+		allGitHubRepos = append(allGitHubRepos, gitHubRepos...)
+	} else {
+		page = page + 1
+		opt := &github.RepositoryListByOrgOptions{"", github.ListOptions{Page: page}}
+		gitHubRepos, _, err = client.Repositories.ListByOrg(*orgName, opt)
+		if err != nil {
+			println(err)
+		}
+		allGitHubRepos = append(allGitHubRepos, gitHubRepos...)
+		goto getAllRepos
+	}
+	repos := make([]Repository, len(allGitHubRepos))
+	for i, repo := range allGitHubRepos {
 		wg.Add(1)
 		go getPullsForRepo(&wg, client, repo, repos, i)
 	}
